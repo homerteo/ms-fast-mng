@@ -1,6 +1,6 @@
 {
   "id": "FLEET_DEVICES",
-  "realm": "NEBULAE_UNIVERSITY",
+  "realm": "NEBULAE_UNIVERSIT2Y",
   "notBefore": 0,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
