@@ -84,6 +84,9 @@ module.exports = {
         FastMngCreateSharkAttack(root, args, context) {
             return sendToBackEndHandler$(root, args, context, WRITE_ROLES, 'mutation', 'SharkAttack', 'FastMngCreateSharkAttack').toPromise();
         },
+        FastMngImportSharkAttack(root, args, context) {
+            return sendToBackEndHandler$(root, args, context, WRITE_ROLES, 'mutation', 'SharkAttack', 'FastMngImportSharkAttack', 30000).toPromise();
+        },
         FastMngUpdateSharkAttack(root, args, context) {
             return sendToBackEndHandler$(root, args, context, WRITE_ROLES, 'mutation', 'SharkAttack', 'FastMngUpdateSharkAttack').toPromise();
         },

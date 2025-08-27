@@ -2,7 +2,7 @@
 
 const uuidv4 = require("uuid/v4");
 const { of, forkJoin, from, iif, throwError } = require("rxjs");
-const { mergeMap, catchError, map, toArray, pluck } = require('rxjs/operators');
+const { mergeMap, catchError, map, toArray, pluck, take, tap } = require('rxjs/operators');
 
 const Event = require("@nebulae/event-store").Event;
 const { CqrsResponseHelper } = require('@nebulae/backend-node-tools').cqrs;
@@ -12,12 +12,17 @@ const { brokerFactory } = require("@nebulae/backend-node-tools").broker;
 
 const broker = brokerFactory();
 const eventSourcing = require("../../tools/event-sourcing").eventSourcing;
+const feedParser = require("../../tools/feed-parser").FeedParser;
 const SharkAttackDA = require("./data-access/SharkAttackDA");
 
 const READ_ROLES = ["SHARK_ATTACK_READ"];
 const WRITE_ROLES = ["SHARK_ATTACK_WRITE"];
 const REQUIRED_ATTRIBUTES = [];
 const MATERIALIZED_VIEW_TOPIC = "emi-gateway-materialized-view-updates";
+
+const FAST_FEED_URL =
+  process.env.FAST_FEED_URL ||
+  "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/global-shark-attack/records?limit=50";
 
 /**
  * Singleton instance
@@ -43,6 +48,7 @@ class SharkAttackCRUD {
         "emigateway.graphql.query.FastMngSharkAttackListing": { fn: instance.getFastMngSharkAttackListing$, instance, jwtValidation: { roles: READ_ROLES, attributes: REQUIRED_ATTRIBUTES } },
         "emigateway.graphql.query.FastMngSharkAttack": { fn: instance.getSharkAttack$, instance, jwtValidation: { roles: READ_ROLES, attributes: REQUIRED_ATTRIBUTES } },
         "emigateway.graphql.mutation.FastMngCreateSharkAttack": { fn: instance.createSharkAttack$, instance, jwtValidation: { roles: WRITE_ROLES, attributes: REQUIRED_ATTRIBUTES } },
+        "emigateway.graphql.mutation.FastMngImportSharkAttack": { fn: instance.importSharkAttack$, instance, jwtValidation: { roles: WRITE_ROLES, attributes: REQUIRED_ATTRIBUTES } },
         "emigateway.graphql.mutation.FastMngUpdateSharkAttack": { fn: instance.updateSharkAttack$, jwtValidation: { roles: WRITE_ROLES, attributes: REQUIRED_ATTRIBUTES } },
         "emigateway.graphql.mutation.FastMngDeleteSharkAttacks": { fn: instance.deleteSharkAttacks$, jwtValidation: { roles: WRITE_ROLES, attributes: REQUIRED_ATTRIBUTES } },
       }
@@ -103,6 +109,80 @@ class SharkAttackCRUD {
       map(([sucessResponse]) => sucessResponse),
       catchError(err => iif(() => err.name === 'MongoTimeoutError', throwError(err), CqrsResponseHelper.handleError$(err)))
     )
+  }
+
+  /**
+  * Import SharkAttacks
+  */
+  importSharkAttack$({ root, args, jwt }, authToken) {
+    ConsoleLogger.i(`Importing shark attacks with args: ${JSON.stringify(args)}`);
+
+    ConsoleLogger.i(`Fetching data from real feed: ${FAST_FEED_URL}`);
+    
+    return feedParser.parserFeed$(FAST_FEED_URL).pipe(
+      toArray(),
+      // tap(feedData => ConsoleLogger.i(`Feed data retrieved: ${feedData.length} records from real API`)),
+      mergeMap(feedData => from(feedData)),
+      take(args.input?.limit || 3),
+      map((attack) => {
+        const attackWithId = {
+          id: uuidv4(),
+          name: attack.case_number || attack.date || `Attack-${uuidv4()}`,
+          description: `Shark attack in ${attack.location || 'unknown location'}`,
+          active: true,
+          organizationId: authToken.organizationId || 'default-org',
+          date: attack.date,
+          year: attack.year,
+          type: attack.type,
+          country: attack.country,
+          area: attack.area,
+          location: attack.location,
+          activity: attack.activity,
+          sex: attack.sex,
+          age: attack.age,
+          injury: attack.injury,
+          fatal_y_n: attack.fatal_y_n,
+          time: attack.time,
+          species: attack.species,
+          investigator_or_source: attack.investigator_or_source,
+          pdf: attack.pdf,
+          href_formula: attack.href_formula,
+          href: attack.href,
+          case_number: attack.case_number,
+          case_number0: attack.case_number0
+        };
+        // ConsoleLogger.i(`Processing attack: ${attackWithId.name} with orgId: ${attackWithId.organizationId}`);
+        return attackWithId;
+      }),
+      mergeMap(attack => 
+        SharkAttackDA.createSharkAttack$(attack.id, attack, authToken.preferred_username).pipe(
+          mergeMap(createdAttack => 
+            eventSourcing.emitEvent$(
+              instance.buildAggregateMofifiedEvent('CREATE', 'SharkAttack', attack.id, authToken, createdAttack), 
+              {autoAcknowledgeKey: process.env.MICROBACKEND_KEY}
+            ).pipe(
+              map(() => createdAttack)
+            )
+          ),
+          catchError(err => {
+            ConsoleLogger.e(`Error creating attack ${attack.id}: ${err.message}`);
+            return of(null);
+          })
+        ),
+        2 
+      ),
+      toArray(),
+      map((attacks) => {
+        const validAttacks = attacks.filter(attack => attack !== null);
+        ConsoleLogger.i(`Successfully imported ${validAttacks.length} attacks`);
+        return {code: validAttacks.length, message: `Successfully imported ${validAttacks.length}`};
+      }),
+      mergeMap(result => CqrsResponseHelper.buildSuccessResponse$(result)),
+      catchError((err) => {
+        ConsoleLogger.e(`Import error: ${err.message}`);
+        return CqrsResponseHelper.handleError$(err);
+      })
+    );
   }
 
   /**

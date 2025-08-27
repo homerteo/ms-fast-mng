@@ -6,8 +6,10 @@ export default {
   shark_attacks: {
     shark_attacks: "SharkAttacks",
     search: "Búsqueda rápida por nombre",
-    add_new_shark_attack: "Agregar Nueva",
-    add_new_shark_attack_short: "Agregar",
+    add_new_shark_attack: "Agregar",
+    add_new_shark_attack_short: "+",
+    import_shark_attacks: "Importar",
+    import_shark_attacks_short: "↓",
     rows_per_page: "Filas por página:",
     of: "de",
     remove: "Eliminar",

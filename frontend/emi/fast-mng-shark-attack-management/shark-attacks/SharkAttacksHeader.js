@@ -16,6 +16,7 @@ function SharkAttacksHeader(props) {
     const user = useSelector(({ auth }) => auth.user);
     const mainTheme = useSelector(({ fuse }) => fuse.settings.mainTheme);
     const searchTextFilter = useSelector(({ SharkAttackManagement }) => SharkAttackManagement.sharkAttacks.filters.name);
+    const { filters, rowsPerPage, page, order, totalDataCount } = useSelector(({ SharkAttackManagement }) => SharkAttackManagement.sharkAttacks);
     const [searchText, setSearchText] = useState(searchTextFilter)
     const [keywordCallBack, keyword] = useEventCallback(
         (event$) => event$.pipe(debounceTime(500))
@@ -31,6 +32,10 @@ function SharkAttacksHeader(props) {
         if (keyword !== undefined && keyword !== null)
             dispatch(Actions.setSharkAttacksFilterName(keyword))
     }, [keyword]);
+
+    function handleRequestImportSharkAttacks(event, property) {
+        dispatch(Actions.importSharkAttack({ filters, order, page, rowsPerPage }));
+    }
 
     return (
         <div className="flex flex-1 w-full items-center justify-between">
@@ -81,6 +86,12 @@ function SharkAttacksHeader(props) {
                 <Button component={Link} to="/shark-attack-mng/shark-attacks/new" className="whitespace-no-wrap" variant="contained">
                     <span className="hidden sm:flex">{T.translate("shark_attacks.add_new_shark_attack")}</span>
                     <span className="flex sm:hidden">{T.translate("shark_attacks.add_new_shark_attack_short")}</span>
+                </Button>
+            </FuseAnimate>
+            <FuseAnimate animation="transition.slideRightIn" delay={300}>
+                <Button component={Link} onClick={handleRequestImportSharkAttacks} className="whitespace-no-wrap" variant="contained">
+                    <span className="hidden sm:flex">{T.translate("shark_attacks.import_shark_attacks")}</span>
+                    <span className="flex sm:hidden">{T.translate("shark_attacks.import_shark_attacks_short")}</span>
                 </Button>
             </FuseAnimate>
         </div>

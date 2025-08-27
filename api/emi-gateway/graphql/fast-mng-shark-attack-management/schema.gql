@@ -72,14 +72,6 @@ type FastMngSharkAttackListing {
   queryTotalResultCount: Int
 }
 
-input FastMngSharkAttackFilterInput {
-  "Name"
-  name: String
-  "organization id"
-  organizationId: String!
-  "SharkAttack active flag"
-  active: Boolean
-}
 
 input FastMngSharkAttackPaginationInput {
   "Page"
@@ -142,6 +134,60 @@ input FastMngSharkAttackFilterInput {
   case_number0: String
 }
 
+input FastMngSharkAttackInput {
+  "name"
+  name: String
+  "organization id"
+  organizationId: String!
+  "SharkAttack description"
+  description: String
+  "SharkAttack active flag"
+  active: Boolean
+  "Date of the incident"
+  date: String
+  "Year of the incident"
+  year: String
+  "Type of shark attack"
+  type: String
+  "Country where the incident occurred"
+  country: String
+  "Area where the incident occurred"
+  area: String
+  "Location of the incident"
+  location: String
+  "Activity of the victim"
+  activity: String
+  "Sex of the victim"
+  sex: String
+  "Age of the victim"
+  age: String
+  "Injury outcome"
+  injury: String
+  "Whether the incident was fatal (Y/N)"
+  fatal_y_n: String
+  "Time of the incident"
+  time: String
+  "Species of shark involved"
+  species: String
+  "Investigator or source"
+  investigator_or_source: String
+  "PDF file name"
+  pdf: String
+  "Formula for the link to the PDF"
+  href_formula: String
+  "Direct link to the PDF"
+  href: String
+  "Case number"
+  case_number: String
+  "Alternative case number"
+  case_number0: String
+}
+
+input FastMngSharkAttackImportInput {
+  "Limit for pagination"
+  limit: Int
+}
+
 type Query {
   "Get SharkAttacks filtered "
   FastMngSharkAttackListing(
@@ -156,6 +202,8 @@ type Query {
 type Mutation {
   "Create a new SharkAttack"
   FastMngCreateSharkAttack(input: FastMngSharkAttackInput!): FastMngSharkAttack
+  "Import shark attacks"
+  FastMngImportSharkAttack(input: FastMngSharkAttackImportInput!): CommandResponse
   "Update an SharkAttack"
   FastMngUpdateSharkAttack(
     id: ID!

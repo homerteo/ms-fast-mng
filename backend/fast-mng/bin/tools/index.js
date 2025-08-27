@@ -9,6 +9,7 @@ const { concat, Observable } = require("rxjs");
 const tools = {
     MongoDB: require("./mongo-db"),
     EventSourcing: require("./event-sourcing"),
+    FeedParser: require("./feed-parser"),
 };
 
 module.exports = {
