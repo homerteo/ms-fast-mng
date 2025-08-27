@@ -14,7 +14,10 @@ export default {
     of: "de",
     remove: "Eliminar",
     table_colums: {
-      name: "Nombre",
+      date: "Fecha",
+      country: "País",
+      type: "tipo",
+      species: "Especie",
       active: "Activo",
     },
     remove_dialog_title: "¿Desea eliminar las sharkAttacks seleccionadas?",
