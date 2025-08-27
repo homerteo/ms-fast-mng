@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fast-mng-mongo
+spec:
+  ports:
+  - port: 27017
+    name: fast-mng-mongo
+  selector:
+    app: fast-mng-mongo
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fast-mng-mongo-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: standard-exp  
+---
+apiVersion: apps/v1beta2 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: fast-mng-mongo
+spec:
+  selector:
+    matchLabels:
+      app: fast-mng-mongo
+  strategy:
+    type: Recreate      
+  template:
+    metadata:
+      labels:
+        app: fast-mng-mongo
+    spec:
+      containers:
+      - image: mongo:4
+        name: fast-mng-mongo        
+        ports:
+        - containerPort: 27017
+          name: fast-mng-mongo
+        volumeMounts:
+        - name: fast-mng-mongo-persistent-storage
+          mountPath: /data/db
+        resources:
+          requests:
+            cpu: "50m"
+      volumes:
+      - name: fast-mng-mongo-persistent-storage
+        persistentVolumeClaim:
+          claimName: fast-mng-mongo-pv-claim      
