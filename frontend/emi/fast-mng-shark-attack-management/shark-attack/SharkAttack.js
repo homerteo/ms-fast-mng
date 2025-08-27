@@ -37,7 +37,27 @@ import { BasicInfo, basicInfoFormValidationsGenerator } from './tabs/BasicInfo';
  * Default Aggregate data when creating 
  */
 const defaultData = {
+    date: '',
+    year: '',
+    type: '',
+    country: '',
+    area: '',
+    location: '',
+    activity: '',
     name: '',
+    sex: '',
+    age: '',
+    injury: '',
+    fatal_y_n: '',
+    time: '',
+    species: '',
+    investigator_or_source: '',
+    pdf: '',
+    href_formula: '',
+    href: '',
+    case_number: '',
+    case_number0: '',
+    original_order: '',
     description: '',
     active: true,
 };
