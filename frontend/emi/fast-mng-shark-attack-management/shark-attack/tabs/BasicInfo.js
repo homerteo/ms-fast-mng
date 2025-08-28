@@ -1,6 +1,12 @@
 import React from "react";
-import { TextField, FormControlLabel, Switch, Button } from "@material-ui/core";
-import { FuseAnimate } from "@fuse";
+import {
+  TextField,
+  FormControlLabel,
+  Switch,
+  Button,
+  CircularProgress,
+} from "@material-ui/core";
+import { FuseAnimate, FuseLoading } from "@fuse";
 import { useSelector, useDispatch } from "react-redux";
 import * as Actions from "../../store/actions";
 import * as Yup from "yup";
@@ -87,9 +93,10 @@ export function basicInfoFormValidationsGenerator(T) {
  */
 export function BasicInfo(props) {
   const { dataSource: form, T, onChange, errors, touched, canWrite } = props;
-  const { filters, rowsPerPage, page, order, totalDataCount } = useSelector(
-    ({ SharkAttackManagement }) => SharkAttackManagement.sharkAttacks
-  );
+  const { filters, rowsPerPage, page, order, totalDataCount, loading } =
+    useSelector(
+      ({ SharkAttackManagement }) => SharkAttackManagement.sharkAttacks
+    );
   const dispatch = useDispatch();
 
   function handleRequestImportByCountrySharkAttacks(event, property) {
@@ -100,6 +107,9 @@ export function BasicInfo(props) {
       )
     );
   }
+    if (loading) {
+        return (<FuseLoading />);
+    }
   return (
     <div>
       <TextField
@@ -510,18 +520,21 @@ export function BasicInfo(props) {
         }
         label={T.translate("shark_attack.active")}
       />
-
       <FuseAnimate animation="transition.slideRightIn" delay={300}>
         <Button
           onClick={handleRequestImportByCountrySharkAttacks}
           className="whitespace-no-wrap"
           variant="contained"
+          disabled={loading}
+          startIcon={loading ? <CircularProgress size={20} /> : null}
         >
           <span className="hidden sm:flex">
-            {T.translate("shark_attacks.import_shark_attacks_by_Country")} {form.country}
+            {T.translate("shark_attacks.import_shark_attacks_by_Country")}{" "}
+            {form.country}
           </span>
           <span className="flex sm:hidden">
-            {T.translate("shark_attacks.import_shark_attacks_by_Country_short")} {form.country}
+            {T.translate("shark_attacks.import_shark_attacks_by_Country_short")}{" "}
+            {form.country}
           </span>
         </Button>
       </FuseAnimate>

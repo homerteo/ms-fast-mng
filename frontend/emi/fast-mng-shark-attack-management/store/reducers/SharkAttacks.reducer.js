@@ -5,6 +5,7 @@ const initialState = {
     totalDataCount: 0,
     page: 0,
     rowsPerPage: 10,
+    loading: false,
     order: {
         direction: 'asc',
         id: null
@@ -68,6 +69,13 @@ const sharkAttacksReducer = function (state = initialState, action) {
                     ...state,
                     filters: { ...state.filters, active: action.active }
                 };
+            }
+        case Actions.SET_LOADING:
+            {
+                return {
+                    ...state,
+                    loading: action.payload
+                }
             }
         default:
             {
