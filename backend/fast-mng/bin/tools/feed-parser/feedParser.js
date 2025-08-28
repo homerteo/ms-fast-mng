@@ -7,9 +7,8 @@ var fetch = require("node-fetch");
 
 class FeedParserClass {
   static getSharkAttacks$(feed) {
-    // Agregar timeout al fetch
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos timeout
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
     return from(fetch(feed, { signal: controller.signal })).pipe(
         mergeMap(res => {

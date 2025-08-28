@@ -118,11 +118,10 @@ class SharkAttackCRUD {
   importSharkAttack$({ root, args, jwt }, authToken) {
     ConsoleLogger.i(`Importing shark attacks with args: ${JSON.stringify(args)}`);
 
-    ConsoleLogger.i(`Fetching data from real feed: ${FAST_FEED_URL}`);
+    ConsoleLogger.i(`Fetching data from feed: ${FAST_FEED_URL}`);
     
     return feedParser.parserFeed$(FAST_FEED_URL).pipe(
       toArray(),
-      // tap(feedData => ConsoleLogger.i(`Feed data retrieved: ${feedData.length} records from real API`)),
       mergeMap(feedData => from(feedData)),
       take(args.input?.limit || 3),
       map((attack) => {
@@ -201,11 +200,10 @@ class SharkAttackCRUD {
 
     ConsoleLogger.i(`Importing shark attacks with args: ${JSON.stringify(args)}`);
 
-    ConsoleLogger.i(`Fetching data from real feed: ${feedUrl}`);
+    ConsoleLogger.i(`Fetching data from feed: ${feedUrl}`);
     
     return feedParser.parserFeed$(feedUrl).pipe(
       toArray(),
-      // tap(feedData => ConsoleLogger.i(`Feed data retrieved: ${feedData.length} records from real API`)),
       mergeMap(feedData => from(feedData)),
       take(args.input?.limit || 3),
       map((attack) => {

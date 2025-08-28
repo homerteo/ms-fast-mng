@@ -107,9 +107,9 @@ export function BasicInfo(props) {
       )
     );
   }
-    if (loading) {
-        return (<FuseLoading />);
-    }
+  if (loading) {
+    return <FuseLoading />;
+  }
   return (
     <div>
       <TextField
