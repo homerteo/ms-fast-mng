@@ -10,6 +10,8 @@ export default {
     add_new_shark_attack_short: "+",
     import_shark_attacks: "Importar",
     import_shark_attacks_short: "↓",
+    import_shark_attacks_by_Country: "Consultar más casos en",
+    import_shark_attacks_by_Country_short: "Consultar en",
     rows_per_page: "Filas por página:",
     of: "de",
     remove: "Eliminar",

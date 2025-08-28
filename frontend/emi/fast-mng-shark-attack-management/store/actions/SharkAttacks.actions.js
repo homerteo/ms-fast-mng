@@ -2,7 +2,7 @@ import { defer } from 'rxjs';
 import { mergeMap, map } from 'rxjs/operators';
 
 import graphqlService from '../../../../services/graphqlService';
-import { FastMngSharkAttackListing, FastMngDeleteSharkAttack, FastMngImportSharkAttack } from '../../gql/SharkAttack';
+import { FastMngSharkAttackListing, FastMngDeleteSharkAttack, FastMngImportSharkAttack, FastMngImportByCountrySharkAttack } from '../../gql/SharkAttack';
 
 export const SET_SHARK_ATTACKS = '[SHARK_ATTACK_MNG] SET SHARK_ATTACKS';
 export const SET_SHARK_ATTACKS_PAGE = '[SHARK_ATTACK_MNG] SET SHARK_ATTACKS PAGE';
@@ -65,12 +65,30 @@ export function removeSharkAttacks(selectedForRemovalIds, { filters, order, page
 }
 
 /**
- * Executes the mutation to remove the selected rows
+ * Executes the mutation to import shark attacks
  */
 export function importSharkAttack({ filters, order, page, rowsPerPage }) {
     const importArgs = { input: {limit: 10} };
     const listingArgs = getListingQueryArguments({ filters, order, page, rowsPerPage });
     return (dispatch) => defer(() => graphqlService.client.mutate(FastMngImportSharkAttack(importArgs))).pipe(
+        mergeMap(() => defer(() => graphqlService.client.query(FastMngSharkAttackListing(listingArgs)))),
+        map((result) =>
+            dispatch({
+                type: SET_SHARK_ATTACKS,
+                payload: result.data.FastMngSharkAttackListing
+            })
+        )
+    ).toPromise();
+}
+
+/**
+ * Executes the mutation to import shark attacks by country
+ */
+export function importByCountrySharkAttack({ filters, order, page, rowsPerPage }, country = 'EGYPT') {
+    const whereClause = `country='${country.toUpperCase()}'`;
+    const importArgs = { input: {limit: 5, where: whereClause} };
+    const listingArgs = getListingQueryArguments({ filters, order, page, rowsPerPage });
+    return (dispatch) => defer(() => graphqlService.client.mutate(FastMngImportByCountrySharkAttack(importArgs))).pipe(
         mergeMap(() => defer(() => graphqlService.client.query(FastMngSharkAttackListing(listingArgs)))),
         map((result) =>
             dispatch({

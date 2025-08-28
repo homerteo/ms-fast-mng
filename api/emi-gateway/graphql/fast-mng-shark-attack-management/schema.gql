@@ -188,6 +188,13 @@ input FastMngSharkAttackImportInput {
   limit: Int
 }
 
+input FastMngSharkAttackByCountryInput {
+  "Country filter"
+  where: String
+  "Limit for pagination"
+  limit: Int
+}
+
 type Query {
   "Get SharkAttacks filtered "
   FastMngSharkAttackListing(
@@ -204,6 +211,8 @@ type Mutation {
   FastMngCreateSharkAttack(input: FastMngSharkAttackInput!): FastMngSharkAttack
   "Import shark attacks"
   FastMngImportSharkAttack(input: FastMngSharkAttackImportInput!): CommandResponse
+  "Import shark attacks by country"
+  FastMngImportByCountrySharkAttack(input: FastMngSharkAttackByCountryInput!): CommandResponse
   "Update an SharkAttack"
   FastMngUpdateSharkAttack(
     id: ID!

@@ -138,6 +138,18 @@ export const FastMngImportSharkAttack = (variables) => ({
   variables,
 });
 
+export const FastMngImportByCountrySharkAttack = (variables) => ({
+  mutation: gql`
+    mutation FastMngImportByCountrySharkAttack($input: FastMngSharkAttackByCountryInput!) {
+      FastMngImportByCountrySharkAttack(input: $input) {
+        code
+        message
+      }
+    }
+  `,
+  variables,
+});
+
 export const FastMngDeleteSharkAttack = (variables) => ({
   mutation: gql`
     mutation FastMngSharkAttackListing($ids: [ID]!) {
