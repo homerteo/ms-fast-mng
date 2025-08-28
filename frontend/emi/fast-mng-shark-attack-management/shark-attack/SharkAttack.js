@@ -33,9 +33,6 @@ import Metadata from './tabs/Metadata';
 import { BasicInfo, basicInfoFormValidationsGenerator } from './tabs/BasicInfo';
 
 
-/**
- * Default Aggregate data when creating 
- */
 const defaultData = {
     date: '',
     year: '',
@@ -57,7 +54,6 @@ const defaultData = {
     href: '',
     case_number: '',
     case_number0: '',
-    original_order: '',
     description: '',
     active: true,
 };
