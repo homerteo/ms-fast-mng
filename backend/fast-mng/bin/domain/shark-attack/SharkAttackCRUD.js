@@ -401,7 +401,7 @@ class SharkAttackCRUD {
         ConsoleLogger.i(
           `Processing country attack: ${JSON.stringify(attack, null, 2)}`
         );
-        // ✅ Los datos vienen directamente en el objeto attack
+        // Los datos vienen directamente en el objeto attack
         const attackData = attack; // Ya no necesitamos .record.fields
         ConsoleLogger.i(
           `Extracted country attackData: ${JSON.stringify(attackData, null, 2)}`

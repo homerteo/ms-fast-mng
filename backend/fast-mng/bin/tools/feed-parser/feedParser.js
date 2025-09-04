@@ -2,7 +2,7 @@
 
 const { from } = require("rxjs");
 const { mergeMap, catchError } = require("rxjs/operators");
-var fetch = require("node-fetch");
+const fetch = require("node-fetch");
 
 
 class FeedParserClass {
