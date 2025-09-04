@@ -19,6 +19,10 @@ export const MicroFrontendConfig = {
             component: React.lazy(() => import('./shark-attacks/SharkAttacks'))
         },
         {
+            path: '/shark-attack-mng/dashboard',
+            component: React.lazy(() => import('./dashboard/dashboard'))
+        },
+        {
             path: '/shark-attack-mng',
             component: () => <Redirect to="/shark-attack-mng/shark-attacks" />
         }

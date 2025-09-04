@@ -14,6 +14,12 @@ const initialState = {
         name: '',
         active: null,
         organizationId: undefined
+    },
+    statistics: {
+        totalAttacks: 0,
+        attacksByCountry: [],
+        attacksByYear: [],
+        loading: false
     }
 };
 
@@ -75,6 +81,27 @@ const sharkAttacksReducer = function (state = initialState, action) {
                 return {
                     ...state,
                     loading: action.payload
+                }
+            }
+        case Actions.SET_SHARK_ATTACK_STATISTICS:
+            {
+                return {
+                    ...state,
+                    statistics: {
+                        ...state.statistics,
+                        ...action.payload,
+                        loading: false
+                    }
+                }
+            }
+        case Actions.SET_STATISTICS_LOADING:
+            {
+                return {
+                    ...state,
+                    statistics: {
+                        ...state.statistics,
+                        loading: action.payload
+                    }
                 }
             }
         default:

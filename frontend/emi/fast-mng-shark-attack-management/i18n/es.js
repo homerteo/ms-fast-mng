@@ -141,4 +141,19 @@ export default {
       },
     },
   },
+  dashboard: {
+    title: "Tablero de Ataques de Tiburones",
+    subtitle: "Estadísticas y análisis de datos de ataques de tiburones importados",
+    total_attacks: "Total de Ataques",
+    total_attacks_description: "Ataques de Tiburones Importados",
+    top_countries: "Principales Países",
+    year_range: "Rango de Años",
+    data_range: "Rango de Datos",
+    top_countries_chart_title: "Top 5 Países - Ataques de Tiburones",
+    attacks_by_year_chart_title: "Ataques de Tiburones por Año",
+    loading: "Cargando estadísticas...",
+    no_data: "No hay datos disponibles",
+    chart_label_attacks: "Número de Ataques",
+    view_dashboard: "Tablero"
+  }
 };

@@ -83,13 +83,19 @@ function SharkAttacksHeader(props) {
 
             </div>
             <FuseAnimate animation="transition.slideRightIn" delay={300}>
-                <Button component={Link} to="/shark-attack-mng/shark-attacks/new" className="whitespace-no-wrap" variant="contained">
+                <Button component={Link} to="/shark-attack-mng/dashboard" className="whitespace-no-wrap ml-8" variant="outlined">
+                    <Icon className="mr-8">dashboard</Icon>
+                    <span className="hidden sm:flex">{T.translate("dashboard.view_dashboard")}</span>
+                </Button>
+            </FuseAnimate>
+            <FuseAnimate animation="transition.slideRightIn" delay={300}>
+                <Button component={Link} to="/shark-attack-mng/shark-attacks/new" className="whitespace-no-wrap ml-8" variant="contained">
                     <span className="hidden sm:flex">{T.translate("shark_attacks.add_new_shark_attack")}</span>
                     <span className="flex sm:hidden">{T.translate("shark_attacks.add_new_shark_attack_short")}</span>
                 </Button>
             </FuseAnimate>
             <FuseAnimate animation="transition.slideRightIn" delay={300}>
-                <Button component={Link} onClick={handleRequestImportSharkAttacks} className="whitespace-no-wrap" variant="contained">
+                <Button component={Link} onClick={handleRequestImportSharkAttacks} className="whitespace-no-wrap ml-8" variant="contained">
                     <span className="hidden sm:flex">{T.translate("shark_attacks.import_shark_attacks")}</span>
                     <span className="flex sm:hidden">{T.translate("shark_attacks.import_shark_attacks_short")}</span>
                 </Button>

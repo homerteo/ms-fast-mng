@@ -107,6 +107,17 @@ class SharkAttackDA {
     );
   }
 
+  static getSharkAttackToCallStats$(filter = {}) {
+    const collection = mongoDB.db.collection(CollectionName);
+
+    const query = this.generateListingQuery(filter);
+    const projection = {}
+
+    let cursor = collection.find(query, {projection});
+
+    return mongoDB.extractAllFromMongoCursor$(cursor);
+  }
+
   static getSharkAttackSize$(filter = {}) {
     const collection = mongoDB.db.collection(CollectionName);
     const query = this.generateListingQuery(filter);    
@@ -122,11 +133,21 @@ class SharkAttackDA {
 
     const metadata = { createdBy, createdAt: Date.now(), updatedBy: createdBy, updatedAt: Date.now() };
     const collection = mongoDB.db.collection(CollectionName);
-    return defer(() => collection.insertOne({
-      _id,
-      ...properties,
-      metadata,
-    })).pipe(
+    return defer(() => collection.updateOne(
+        {
+          _id,
+        },
+        {
+          $set: {
+            ...properties,
+            metadata,
+          }
+        },
+        {
+          upsert: true
+        }
+      )
+    ).pipe(
       map(({ insertedId }) => ({ id: insertedId, ...properties, metadata }))
     );
   }

@@ -10,6 +10,7 @@ const {
   pluck,
   take,
   tap,
+  reduce,
 } = require("rxjs/operators");
 
 const Event = require("@nebulae/event-store").Event;
@@ -60,6 +61,11 @@ class SharkAttackCRUD {
         },
         "emigateway.graphql.query.FastMngSharkAttack": {
           fn: instance.getSharkAttack$,
+          instance,
+          jwtValidation: { roles: READ_ROLES, attributes: REQUIRED_ATTRIBUTES },
+        },
+        "emigateway.graphql.query.FastMngSharkAttackStatistics": {
+          fn: instance.getSharkAttackStatistics$,
           instance,
           jwtValidation: { roles: READ_ROLES, attributes: REQUIRED_ATTRIBUTES },
         },
@@ -127,6 +133,48 @@ class SharkAttackCRUD {
       map(([listing, queryTotalResultCount]) => ({
         listing,
         queryTotalResultCount,
+      })),
+      mergeMap((rawResponse) =>
+        CqrsResponseHelper.buildSuccessResponse$(rawResponse)
+      ),
+      catchError((err) =>
+        iif(
+          () => err.name === "MongoTimeoutError",
+          throwError(err),
+          CqrsResponseHelper.handleError$(err)
+        )
+      )
+    );
+  }
+
+  /**
+   * Gets the SharkAttack list
+   *
+   * @param {*} args args
+   */
+  getSharkAttackStatistics$({ args }, authToken) {
+    const { filterInput } = args;
+
+    return SharkAttackDA.getSharkAttackStatistics$(filterInput).pipe(
+      reduce(
+        (acc, attack) => {
+          acc.totalAttacks = (acc.totalAttacks || 0) + 1;
+          if (attack.country) {
+            acc.attacksByCountry[attack.country] =
+              (acc.attacksByCountry[attack.country] || 0) + 1;
+          }
+          if (attack.year) {
+            acc.attacksByYear[attack.year] =
+              (acc.attacksByYear[attack.year] || 0) + 1;
+          }
+          return acc;
+        },
+        { totalAttacks: 0, attacksByCountry: {}, attacksByYear: {} }
+      ),
+      map((stats) => ({
+        totalAttacks: stats.totalAttacks,
+        attacksByCountry: stats.attacksByCountry,
+        attacksByYear: stats.attacksByYear,
       })),
       mergeMap((rawResponse) =>
         CqrsResponseHelper.buildSuccessResponse$(rawResponse)
@@ -220,11 +268,15 @@ class SharkAttackCRUD {
 
     return feedParser.parserFeed$(FAST_FEED_URL).pipe(
       tap((feedData) => {
-        ConsoleLogger.i(`Raw feedParser response: ${JSON.stringify(feedData, null, 2)}`);
+        ConsoleLogger.i(
+          `Raw feedParser response: ${JSON.stringify(feedData, null, 2)}`
+        );
       }),
       mergeMap((feedData) => {
         if (!feedData || !feedData.results) {
-          ConsoleLogger.e(`Invalid feed structure: ${JSON.stringify(feedData)}`);
+          ConsoleLogger.e(
+            `Invalid feed structure: ${JSON.stringify(feedData)}`
+          );
           return of([]);
         }
 
@@ -234,8 +286,14 @@ class SharkAttackCRUD {
         }
 
         ConsoleLogger.i(`Found ${feedData.results.length} results in feed`);
-        ConsoleLogger.i(`Sample result structure: ${JSON.stringify(feedData.results[0], null, 2)}`);
-        
+        ConsoleLogger.i(
+          `Sample result structure: ${JSON.stringify(
+            feedData.results[0],
+            null,
+            2
+          )}`
+        );
+
         return from(feedData.results);
       }),
       take(args.input?.limit || 3),
@@ -250,7 +308,10 @@ class SharkAttackCRUD {
         const mappedAttack = {
           id: uuidv4(),
           name:
-            attackData.case_number || attackData.name || attackData.date || `Attack-${uuidv4()}`,
+            attackData.case_number ||
+            attackData.name ||
+            attackData.date ||
+            `Attack-${uuidv4()}`,
           description: `Shark attack in ${
             attackData.location || "unknown location"
           }`,
@@ -324,7 +385,9 @@ class SharkAttackCRUD {
 
     return feedParser.parserFeed$(feedUrl).pipe(
       tap((feedData) => {
-        ConsoleLogger.i(`Country feed response: ${JSON.stringify(feedData, null, 2)}`);
+        ConsoleLogger.i(
+          `Country feed response: ${JSON.stringify(feedData, null, 2)}`
+        );
       }),
       mergeMap((feedData) => {
         if (!feedData || !feedData.results || feedData.results.length === 0) {
@@ -346,7 +409,10 @@ class SharkAttackCRUD {
         const mappedAttack = {
           id: uuidv4(),
           name:
-            attackData.case_number || attackData.name || attackData.date || `Attack-${uuidv4()}`,
+            attackData.case_number ||
+            attackData.name ||
+            attackData.date ||
+            `Attack-${uuidv4()}`,
           description: `Shark attack in ${
             attackData.location || "unknown location"
           }`,

@@ -141,4 +141,19 @@ export default {
       },
     },
   },
+  dashboard: {
+    title: "Shark Attacks Dashboard",
+    subtitle: "Statistics and analytics of imported shark attack data",
+    total_attacks: "Total Attacks",
+    total_attacks_description: "Shark Attacks Imported",
+    top_countries: "Top Countries",
+    year_range: "Year Range",
+    data_range: "Data Range",
+    top_countries_chart_title: "Top 5 Countries - Shark Attacks",
+    attacks_by_year_chart_title: "Shark Attacks by Year",
+    loading: "Loading statistics...",
+    no_data: "No data available",
+    chart_label_attacks: "Number of Attacks",
+    view_dashboard: "Dashboard"
+  }
 };
