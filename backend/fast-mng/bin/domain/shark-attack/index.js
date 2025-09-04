@@ -1,9 +1,12 @@
 "use strict";
 
-const { empty, Observable } = require("rxjs");
+const { empty, Observable, concat } = require("rxjs");
+const { tap, catchError } = require("rxjs/operators");
+const { ConsoleLogger } = require("@nebulae/backend-node-tools").log;
 
 const SharkAttackCRUD = require("./SharkAttackCRUD")();
 const SharkAttackES = require("./SharkAttackES")();
+const SharkAttackEventConsumer = require("./SharkAttackEventConsumer")();
 const DataAcess = require("./data-access/");
 
 module.exports = {
@@ -35,11 +38,18 @@ module.exports = {
    */
   cqrsRequestProcessorMap: SharkAttackCRUD.generateRequestProcessorMap(),
   /**
+   * @returns {SharkAttackEventConsumer}
+   */
+  SharkAttackEventConsumer,
+  /**
    * @returns {SharkAttackES}
    */
   SharkAttackES,
   /**
    * EventSoircing event processors Map
    */
-  eventSourcingProcessorMap: SharkAttackES.generateEventProcessorMap(),
+  eventSourcingProcessorMap: {
+    ...SharkAttackES.generateEventProcessorMap(),
+    ...SharkAttackEventConsumer.generateEventProcessorMap()
+  },
 };

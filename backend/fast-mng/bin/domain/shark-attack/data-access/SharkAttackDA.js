@@ -220,6 +220,18 @@ class SharkAttackDA {
     );
   }
 
+  /**
+   * Find a shark attack by ID for idempotency checks
+   * @param {string} id 
+   */
+  static findSharkAttackById$(id) {
+    const collection = mongoDB.db.collection(CollectionName);
+    
+    return defer(() => collection.findOne({ _id: id })).pipe(
+      map(result => result ? { ...result, id: result._id } : null)
+    );
+  }
+
 }
 /**
  * @returns {SharkAttackDA}

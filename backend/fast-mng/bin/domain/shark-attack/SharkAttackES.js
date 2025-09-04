@@ -30,11 +30,11 @@ class SharkAttackES {
           instance,
           processOnlyOnSync: true,
         },
-        SharkAttackReported: {
+/*         SharkAttackReported: {
           fn: instance.handleSharkAttackReported$,
           instance,
           processOnlyOnSync: false,
-        },
+        }, */
       },
     };
   }
@@ -72,7 +72,7 @@ class SharkAttackES {
    * Handles SharkAttackReported events
    * @param {Object} evt Event data
    */
-  handleSharkAttackReported$({ etv, aid, av, data, user, timestamp }) {
+/*   handleSharkAttackReported$({ etv, aid, av, data, user, timestamp }) {
     ConsoleLogger.i(`Handling SharkAttackReported event: aid=${aid}, user=${user}`);
     
     return SharkAttackDA.createSharkAttack$(
@@ -88,7 +88,7 @@ class SharkAttackES {
         return of(null);
       })
     );
-  }
+  } */
 }
 
 /**

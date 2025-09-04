@@ -381,7 +381,7 @@ class SharkAttackCRUD {
       mergeMap((attack) =>
         eventSourcing
           .emitEvent$(
-            SharkAttackCRUD.buildSharkAttackReportedEvent(attack, authToken),
+            instance.buildSharkAttackReportedEvent(attack, authToken),
             {
               autoAcknowledgeKey: process.env.MICROBACKEND_KEY,
             }
